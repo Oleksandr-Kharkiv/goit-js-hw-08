@@ -3,28 +3,20 @@ import throttle from 'lodash.throttle';
 
 const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
+const LS_KEY_CURRENT_TIME = "videoplayer-current-time";
 
+const currentTimeObj = JSON.parse(localStorage.getItem(LS_KEY_CURRENT_TIME));
+
+if(localStorage.getItem(LS_KEY_CURRENT_TIME)){
+  player.setCurrentTime(currentTimeObj.seconds)
+} 
+  
 player.on(
-  'timeupdate',
-  throttle(function (time) {
-    localStorage.setItem('videoplayer-current-time', JSON.stringify(time));
-  }, 1000)
-);
+    'timeupdate',
+    throttle(function (time) {
+      localStorage.setItem(LS_KEY_CURRENT_TIME, JSON.stringify(time));
+    }, 1000)
+    );
 
-let lsTime = JSON.parse(localStorage.getItem('videoplayer-current-time'));
-
-player
-  .setCurrentTime(lsTime.seconds || 0)
-  .then(function (seconds) {
-    // seconds = the actual time that the player seeked to
-  })
-  .catch(function (error) {
-    switch (error.name) {
-      case 'RangeError':
-        // the time was less than 0 or greater than the video’s duration
-        break;
-      default:
-        // some other error occurred
-        break;
-    }
-  });
+  console.log(currentTimeObj);
+  console.log(localStorage.getItem(LS_KEY_CURRENT_TIME));
